@@ -35,7 +35,9 @@ int sc_memoryGet(int address, int* value)
 int sc_memorySave(char* filename)
 {
     FILE* file = fopen(filename, "wb");
-    fwrite(memory, sizeof(int), SIZE, file);
+    int flag = fwrite(memory, sizeof(int), SIZE, file);
+	if (!flag)
+		return -1;
     fclose(file);
     return 0;
 }
@@ -43,7 +45,9 @@ int sc_memorySave(char* filename)
 int sc_memoryLoad(char* filename)
 {
     FILE* file = fopen(filename, "rb");
-    fread(memory, sizeof(int), SIZE, file);
+    int flag = fread(memory, sizeof(int), SIZE, file);
+	if (!flag)
+		return -1;
     fclose(file);
     return 0;
 }
