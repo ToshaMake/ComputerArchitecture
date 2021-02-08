@@ -12,5 +12,6 @@
 int sc_regInit();
 int sc_regSet(int reg, int value);
 int sc_regGet(int reg, int* value);
+void sc_printReg();
 
 #endif
