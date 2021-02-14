@@ -31,3 +31,7 @@ int sc_regGet(int reg, int* value)
         *value = 1;
 	return 0;
 }
+
+void sc_printReg(){
+	printf("%d", flag);
+}
