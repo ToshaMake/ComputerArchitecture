@@ -4,6 +4,8 @@ set(CMAKE_C_FLAGS "-O0 -std=c99")
 
 ADD_LIBRARY(SimpleComputer STATIC memory.c register.c command.c memory.h register.h command.h)
 
+ADD_LIBRARY(Term STATIC term.c term.h)
+
 ADD_EXECUTABLE(MySimpleComputer main.c)
 
-TARGET_LINK_LIBRARIES(MySimpleComputer SimpleComputer)
+TARGET_LINK_LIBRARIES(MySimpleComputer SimpleComputer Term)
