@@ -12,7 +12,7 @@ typedef enum {
 	Green = 2,
 	Yellow = 3,
 	Blue = 4,
-	Purple = 5,
+	Magenta = 5,
 	Cyan = 6
 }colors;
 

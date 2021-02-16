@@ -1,5 +1,4 @@
 #include "command.h"
-#include "term.h"
 #include "bigchars.h"
 int main() {
 
@@ -62,6 +61,7 @@ int main() {
     //int x, y;
     //mt_getscreensize(&x, &y);
     //printf("%d\n%d\n", x, y);
-    bc_printA("aaaaaaaaaaa");
+    //bc_printA("aaaaaaaaaaa");
+    bc_box(1, 1, 12, 12);
 	return 0;
 }
