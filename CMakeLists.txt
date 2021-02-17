@@ -10,4 +10,6 @@ ADD_LIBRARY(BigChars STATIC bigchars.c bigchars.h)
 
 ADD_EXECUTABLE(MySimpleComputer main.c)
 
-TARGET_LINK_LIBRARIES(MySimpleComputer SimpleComputer Term BigChars)
+TARGET_LINK_LIBRARIES(BigChars Term)
+
+TARGET_LINK_LIBRARIES(MySimpleComputer SimpleComputer BigChars)

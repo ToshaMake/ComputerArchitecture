@@ -1,5 +1,6 @@
 #include "command.h"
 #include "bigchars.h"
+
 int main() {
 
 
@@ -61,7 +62,20 @@ int main() {
     //int x, y;
     //mt_getscreensize(&x, &y);
     //printf("%d\n%d\n", x, y);
-    //bc_printA("aaaaaaaaaaa");
-    bc_box(1, 1, 12, 12);
+    //bc_printA("aaaaaaaaaa");
+    //bc_box(10, 5, 8, 8);
+    int fd = open("fil.bin", O_CREAT | O_RDWR | O_TRUNC);
+    int a[2] = {431, 1312};
+    int d[2];
+    int b;
+    int flag;
+    //bc_setbigcharpos(a, 0, 0, 1);
+    bc_bigcharwrite(fd, a, 2);
+    int ff = open("fil.bin", O_RDONLY);
+    flag = bc_bigcharread(ff, d, 2, &b);
+    //bc_printbigchar(a, 1, 1, Red, Black);
+    //bc_getbigcharpos(a, 1, 0, &b);
+    printf("%d\n%d\n", d[0], d[1]); 
+    //printf("%d", b);
 	return 0;
 }
