@@ -83,7 +83,7 @@ int bc_getbigcharpos(int* big, int x, int y, int* value)
 
 int bc_bigcharwrite(int fd, int* big, int count)
 {
-	int	flag = write(fd, big, count * sizeof(int) * 2);
+	int	flag = write(fd, big, count * sizeof(int));
 	if (flag == -1)
 		return -1;
 	//printf("%d", flag);
@@ -92,7 +92,7 @@ int bc_bigcharwrite(int fd, int* big, int count)
 
 int bc_bigcharread(int fd, int* big, int need_count, int* count)
 {
-	int flag = read(fd, big, need_count * sizeof(int) * 2);
+	int flag = read(fd, big, need_count * sizeof(int));
 	if (flag == -1)
 		return -1;
 	*count = flag / (sizeof(int) * 2);
