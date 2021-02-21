@@ -6,3 +6,5 @@ LibraryTest
 [Cc][Mm]ake*
 !CMakeLists.txt
 *.bin
+.vs/*
+out/*

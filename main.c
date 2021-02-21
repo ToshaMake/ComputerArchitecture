@@ -1,6 +1,6 @@
 #include "command.h"
 #include "bigchars.h"
-
+#include "readkey.h"
 int main() {
 
 
@@ -64,18 +64,23 @@ int main() {
     //printf("%d\n%d\n", x, y);
     //bc_printA("aaaaaaaaaa");
     //bc_box(10, 5, 8, 8);
-    int fd = open("fil.bin", O_CREAT | O_RDWR | O_TRUNC);
-    int a[2] = {431, 1312};
-    int d[2];
+    //int fd = open("fil.bin", O_CREAT | O_RDWR | O_TRUNC);
+    //int a[2] = {431, 1312};
+    //int d[2];
     int b;
-    int flag;
+    //int flag;
     //bc_setbigcharpos(a, 0, 0, 1);
-    bc_bigcharwrite(fd, a, 2);
-    int ff = open("fil.bin", O_RDONLY);
-    flag = bc_bigcharread(ff, d, 2, &b);
+    //bc_bigcharwrite(fd, a, 2);
+    //int ff = open("fil.bin", O_RDONLY);
+    //flag = bc_bigcharread(ff, d, 2, &b);
     //bc_printbigchar(a, 1, 1, Red, Black);
     //bc_getbigcharpos(a, 1, 0, &b);
-    printf("%d\n%d\n", d[0], d[1]); 
+    //printf("%d\n%d\n", d[0], d[1]); 
     //printf("%d", b);
+    rk_readkey(&b);
+    //rk_mytermsave();
+    //rk_mytermregime(0, 0, 0, 0, 1);
+    //rk_mytermrestore();
+    printf("%d", b);
 	return 0;
 }
