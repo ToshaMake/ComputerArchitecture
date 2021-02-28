@@ -1,63 +1,96 @@
 #include "readkey.h"
 
+int receiveEscSeq()
+{
+    unsigned char sym;
+
+    enum keys retval;
+
+    sym = getchar();
+    if (sym != 0x5B)
+        return KEY_other;
+    sym = getchar();
+    switch (sym) {
+    case 0x41:
+        retval = KEY_up;
+        return retval;
+    case 0x42:
+        retval = KEY_down;
+        return retval;
+    case 0x43:
+        retval = KEY_right;
+        return retval;
+    case 0x44:
+        retval = KEY_left;
+        return retval;
+    case 0x31:
+        break;
+    default:
+        return KEY_other;
+    }
+
+    sym = getchar();
+    if (sym == 0x35)
+        retval = KEY_f5;
+    else if (sym == 0x37)
+        retval = KEY_f6;
+    else
+        return KEY_other;
+    sym = getchar();
+    if (sym != 0x7E)
+        return KEY_other;
+
+    return retval;
+}
+    
 int rk_readkey(int* key)
 {
-	struct termios orig_options;
-	char buff[32];
+    unsigned char sym = getchar();
 
-	if (!tcgetattr(STDIN_FILENO, &orig_options))
-		return -1;
-	if (!rk_mytermregime(0, 0, 1, 0, 1))
-		return -1;
-	int count = read(1, buff, 31);
-	if (!count)
-		return -1;
-	buff[count] = '\0';
-	printf("%s", buff);
-	printf("%d", count);
-	if (!strcmp(buff, "l"))
-		*key = KEY_l;
-	else if (!strcmp(buff, "s"))
-		*key = KEY_s;
-	else if (!strcmp(buff, "r"))
-		*key = KEY_r;
-	else if (!strcmp(buff, "t"))
-		*key = KEY_t;
-	else if (!strcmp(buff, "i"))
-		*key = KEY_i;
-	else if (!strcmp(buff, "\n"))
-		*key = KEY_enter;
-	else if (!strcmp(buff, "\033[15~"))
-		*key = KEY_f5;
-	else if (!strcmp(buff, "\033[17~"))
-		*key = KEY_f6;
-	else if (!strcmp(buff, "\033[A"))
-		*key = KEY_up;
-	else if (!strcmp(buff, "\033[B"))
-		*key = KEY_down;
-	else if (!strcmp(buff, "\033[C"))
-		*key = KEY_right;
-	else if (!strcmp(buff, "\033[D"))
-		*key = KEY_left;
-	else 
-		*key = KEY_other;
-	if (!tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_options))
-		return -1;
-
-	return 0;
+    if (sym == 0x1B) {
+        *key = receiveEscSeq();
+        if (*key == KEY_other)
+            return -1;
+    }
+    else {
+        switch (sym) {
+        case 'l':
+            *key = KEY_l;
+            break;
+        case 's':
+            *key = KEY_s;
+            break;
+        case 'r':
+            *key = KEY_r;
+            break;
+        case 't':
+            *key = KEY_t;
+            break;
+        case 'i':
+            *key = KEY_i;
+            break;
+        case '\n':
+            *key = KEY_enter;
+            break;
+        default:
+            *key = KEY_other;
+            return -1;
+        }
+    }
+    return 0;
 }
-
+    
 int rk_mytermsave()
 {
-	struct termios options;
+    struct termios options;
 
-	int fd = open("settings.bin", O_CREAT | O_RDWR | O_TRUNC);
+    int fd = open("settings.bin", O_CREAT | O_RDWR | O_TRUNC);
 
-	if (tcgetattr(STDIN_FILENO, &options) != 0)
-		return -1;
-	if (!write(fd, &options, sizeof(options)))
-		return -1;
-	return 0;
+    if (tcgetattr(STDIN_FILENO, &options) != 0)
+        return -1;
+    if (!write(fd, &options, sizeof(options)))
+        return -1;
+    return 0;
 }
 
 int rk_mytermrestore()
