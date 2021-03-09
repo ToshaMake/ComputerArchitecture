@@ -9,7 +9,9 @@ int sc_regInit()
 	flag = 0;
 	return 0;
 }
-
+void sc_regNULL() {
+    flag = 0;
+}
 int sc_regSet(int reg, int value)
 {
     if (reg > 16 || reg < 1) 

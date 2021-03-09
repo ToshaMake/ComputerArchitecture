@@ -17,4 +17,5 @@ void sc_accumSet(int val);
 int sc_accumGet();
 void sc_counterSet(int val);
 int sc_counterGet();
+void sc_regNULL();
 #endif

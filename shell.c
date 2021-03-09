@@ -91,23 +91,28 @@ int shell() {
         }
         case KEY_i: {
             sc_memoryLoad("reset.bin");
+            sc_regNULL();
             repaintCell();
             break;
         }
         case KEY_s: {
             mt_gotoXY(1, 25);
+            rk_mytermregime(0, 0, 0, 1, 1);
             printf("file name:\n");
             char fileName[250];
             scanf("%s", fileName);
+            rk_mytermregime(0, 0, 0, 0, 1);
             sc_memorySave(fileName);
             repaintCell();
             break;
         }
         case KEY_l: {
             mt_gotoXY(1, 25);
+            rk_mytermregime(0, 0, 0, 1, 1);
             printf("file name:\n");
             char fileName[250];
             scanf("%s", fileName);
+            rk_mytermregime(0, 0, 0, 0, 1);
             sc_memoryLoad(fileName);
             repaintCell();
             break;
