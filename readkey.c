@@ -69,6 +69,9 @@ int rk_readkey(int* key)
         case 'i':
             *key = KEY_i;
             break;
+        case 'q':
+            *key = KEY_q;
+            break;
         case '\n':
             *key = KEY_enter;
             break;
@@ -82,11 +85,14 @@ int rk_readkey(int* key)
     
 int rk_mytermsave()
 {
+    printf("file name:\n");
+    char fileName[250];
+    scanf("%s", fileName);
     struct termios options;
 
-    int fd = open("settings.bin", O_CREAT | O_RDWR | O_TRUNC);
+    int fd = open(fileName, O_CREAT | O_RDWR | O_TRUNC);
 
-    if (tcgetattr(STDIN_FILENO, &options) != 0)
+    if (tcgetattr(0, &options) != 0)
         return -1;
     if (!write(fd, &options, sizeof(options)))
         return -1;
@@ -96,11 +102,14 @@ int rk_mytermsave()
 int rk_mytermrestore()
 {
 	struct termios options;
-	int fd = open("settings.bin", O_RDONLY);
+    printf("file name:\n");
+    char fileName[250];
+    scanf("%s", fileName);
+	int fd = open(fileName, O_RDONLY);
 
 	if (!read(fd, &options, sizeof(options)))
 		return -1;
-	if (!tcsetattr(STDIN_FILENO, TCSAFLUSH, &options))
+	if (!tcsetattr(0, TCSAFLUSH, &options))
 		return -1;
 
 	return 0;
@@ -110,31 +119,28 @@ int rk_mytermregime(int regime, int vtime, int vmin, int echo, int sigint)
 {
 	struct termios options;
 
-	if (tcgetattr(STDIN_FILENO, &options) != 0)
-		return -1;
+    tcgetattr(0, &options);
 	if (regime == 1)
 		options.c_lflag |= ICANON;
 	else if (regime == 0)
 		options.c_lflag &= ~ICANON;
 	else return -1;
 
-	if (regime == 0)
-	{
-		options.c_cc[VTIME] = vtime;
-		options.c_cc[VMIN] = vmin;
-		if (echo == 1)
-			options.c_lflag |= ECHO;
-		else if (echo == 0)
-			options.c_lflag &= ~ECHO;
-		else return -1;
-		if (sigint == 1)
-			options.c_lflag |= ISIG;
-		else if (sigint == 0)
-			options.c_lflag &= ~ISIG;
-		else return -1;
-	}
-	if (!tcsetattr(STDIN_FILENO, TCSANOW, &options))
-		return -1;
+	
+    options.c_cc[VTIME] = vtime;
+    options.c_cc[VMIN] = vmin;
+    if (echo == 1)
+        options.c_lflag |= ECHO;
+    else if (echo == 0)
+        options.c_lflag &= ~ECHO;
+    else return -1;
+    if (sigint == 1)
+        options.c_lflag |= ISIG;
+    else if (sigint == 0)
+        options.c_lflag &= ~ISIG;
+    else return -1;
+
+    tcsetattr(0, TCSANOW, &options);
 
 	return 0;
 }

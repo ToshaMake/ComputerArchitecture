@@ -1,6 +1,7 @@
 #include "command.h"
 #include "bigchars.h"
 #include "readkey.h"
+#include "shell.h"
 int main() {
 
 
@@ -65,9 +66,9 @@ int main() {
     //bc_printA("aaaaaaaaaa");
     //bc_box(10, 5, 8, 8);
     //int fd = open("fil.bin", O_CREAT | O_RDWR | O_TRUNC);
-    //int a[2] = {431, 1312};
+    //int a[2] = { 2115508224, 1579134 };
     //int d[2];
-    int b;
+    //int b;
     //int flag;
     //bc_setbigcharpos(a, 0, 0, 1);
     //bc_bigcharwrite(fd, a, 2);
@@ -77,10 +78,13 @@ int main() {
     //bc_getbigcharpos(a, 1, 0, &b);
     //printf("%d\n%d\n", d[0], d[1]); 
     //printf("%d", b);
-    rk_readkey(&b);
+    //rk_readkey(&b);
     //rk_mytermsave();
     //rk_mytermregime(0, 0, 0, 0, 1);
     //rk_mytermrestore();
-    printf("%d", b);
+    //printf("%d", b);
+    //mt_clrscr();
+    //bc_box(10, 5, 8, 8);
+    shell();
 	return 0;
 }

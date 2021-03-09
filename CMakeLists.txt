@@ -10,8 +10,12 @@ ADD_LIBRARY(BigChars STATIC bigchars.c bigchars.h)
 
 ADD_LIBRARY(ReadKey STATIC readkey.c readkey.h)
 
+ADD_LIBRARY(Shell STATIC shell.c shell.h)
+
 ADD_EXECUTABLE(MySimpleComputer main.c)
 
 TARGET_LINK_LIBRARIES(BigChars Term)
 
-TARGET_LINK_LIBRARIES(MySimpleComputer SimpleComputer BigChars ReadKey)
+TARGET_LINK_LIBRARIES(Shell BigChars SimpleComputer ReadKey)
+
+TARGET_LINK_LIBRARIES(MySimpleComputer Shell)

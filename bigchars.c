@@ -9,7 +9,7 @@ int bc_printA(char* str)
 int bc_box(int x1, int y1, int x2, int y2)
 {
 	int x, y, i;
-	mt_clrscr();
+	//mt_clrscr();
 	mt_getscreensize(&y, &x);
 	if ((x1 < 0) || (y1 < 0) || (x1+x2 > x) || (y1+y2 > y) || (x2 < 2) || (y2 < 2))
 		return -1;
@@ -37,7 +37,6 @@ int bc_box(int x1, int y1, int x2, int y2)
 int bc_printbigchar(int* big, int x, int y, colors fg, colors bg)
 {
 	int x1, y1, i, j;
-	mt_clrscr();
 	mt_getscreensize(&y1, &x1);
 	if ((x < 0) || (y < 0) || (x + 8 > x1) || (y + 8 > y1))
 		return -1;
@@ -55,8 +54,8 @@ int bc_printbigchar(int* big, int x, int y, colors fg, colors bg)
 			mt_gotoXY(x + j, y + i);
 		}
 	}
-	mt_setfgcolor(White);
-	mt_setbgcolor(Black);
+	//mt_setfgcolor(White);
+	//mt_setbgcolor(Black);
 	return 0;
 }
 
@@ -99,3 +98,4 @@ int bc_bigcharread(int fd, int* big, int need_count, int* count)
 	//printf("%d", flag);
 	return 0;
 }
+

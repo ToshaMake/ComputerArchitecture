@@ -1,6 +1,8 @@
 #include "register.h"
 
 int flag;
+int accumReg = 0;
+int counterReg = 0;
 
 int sc_regInit()
 {
@@ -34,4 +36,24 @@ int sc_regGet(int reg, int* value)
 
 void sc_printReg(){
 	printf("%d", flag);
+}
+
+void sc_accumSet(int val)
+{
+    accumReg = val;
+}
+
+int sc_accumGet()
+{
+    return accumReg;
+}
+
+void sc_counterSet(int val)
+{
+    counterReg = val;
+}
+
+int sc_counterGet()
+{
+    return counterReg;
 }

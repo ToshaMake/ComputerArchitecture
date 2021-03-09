@@ -7,4 +7,4 @@ LibraryTest
 !CMakeLists.txt
 *.bin
 .vs/*
-out/*
+out/*os
