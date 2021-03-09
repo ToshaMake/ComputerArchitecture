@@ -97,7 +97,7 @@ int shell() {
         }
         case KEY_s: {
             mt_gotoXY(1, 25);
-            rk_mytermregime(0, 0, 0, 1, 1);
+            rk_mytermregime(1, 0, 0, 1, 1);
             printf("file name:\n");
             char fileName[250];
             scanf("%s", fileName);
@@ -108,7 +108,7 @@ int shell() {
         }
         case KEY_l: {
             mt_gotoXY(1, 25);
-            rk_mytermregime(0, 0, 0, 1, 1);
+            rk_mytermregime(1, 0, 0, 1, 1);
             printf("file name:\n");
             char fileName[250];
             scanf("%s", fileName);
@@ -466,7 +466,7 @@ void drawBigCell() {
 void inputMemory()
 {
     printf("Input value:\n");
-    rk_mytermregime(0, 0, 0, 1, 1);
+    rk_mytermregime(1, 0, 0, 1, 1);
     int command, operand, result;
     scanf("%2d%2d", &command, &operand);
     int retval = sc_commandEncode(command, operand, &result);
@@ -480,7 +480,7 @@ void inputMemory()
 void inputAccumulator()
 {
     printf("Input value:\n");
-    rk_mytermregime(0, 0, 0, 1, 0);
+    rk_mytermregime(1, 0, 0, 1, 1);
     int command, operand, result;
     scanf("%2d%2d", &command, &operand);
     int retval = sc_commandEncode(command, operand, &result);
@@ -495,7 +495,7 @@ void inputAccumulator()
 void inputCounter()
 {
     printf("Input value:\n");
-    rk_mytermregime(0, 0, 0, 1, 0);
+    rk_mytermregime(1, 0, 0, 1, 0);
     int command, operand, result;
     scanf("%2d%2d", &command, &operand);
     int retval = sc_commandEncode(command, operand, &result);
