@@ -36,19 +36,11 @@ void inputCounter();
 int shell() {
     currCell.posCol = 0;
     currCell.posRow = 0;
-
     setDefaultColor();
     rk_mytermregime(0, 0, 0, 0, 1);
     mt_clrscr();
 
-    fillContext();
-    drawMemory();
-    drawFlags();
-    drawKeys();
-    drawAccumulator();
-    drawOperation();
-    drawInstructionCounter();
-    drawBigCell();
+    repaintCell();
 
     mt_gotoXY(1, 25);
     int key;
@@ -101,6 +93,7 @@ int shell() {
             printf("file name:\n");
             char fileName[250];
             scanf("%s", fileName);
+            getchar();
             rk_mytermregime(0, 0, 0, 0, 1);
             sc_memorySave(fileName);
             repaintCell();
@@ -112,6 +105,7 @@ int shell() {
             printf("file name:\n");
             char fileName[250];
             scanf("%s", fileName);
+            getchar();
             rk_mytermregime(0, 0, 0, 0, 1);
             sc_memoryLoad(fileName);
             repaintCell();
@@ -175,19 +169,19 @@ void printFlagReg() {
 
     sc_regGet(OVERFLOW, &val);
     if (val)
-        printBuff[0] = 'O';
+        printBuff[0] = 'P';
     sc_regGet(ZEROERROR, &val);
     if (val)
-        printBuff[1] = 'Z';
+        printBuff[1] = 'O';
     sc_regGet(OUTMEMORY, &val);
     if (val)
-        printBuff[2] = 'S';
+        printBuff[2] = 'M';
     sc_regGet(CLOCKIGNORE, &val);
     if (val)
-        printBuff[3] = 'C';
+        printBuff[3] = 'T';
     sc_regGet(COMMANDERROR, &val);
     if (val)
-        printBuff[4] = 'I';
+        printBuff[4] = 'E';
 
     for (int i = 0; i < 5; i++) {
         putchar(printBuff[i]);

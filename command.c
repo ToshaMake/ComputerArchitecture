@@ -8,8 +8,8 @@ int sc_commandEncode(int command, int operand, int* value)
         || (command > 33 && command < 40)
         || (command > 43 && command < 51)
         || (command > 76)) {
-        return -1;
         sc_regSet(COMMANDERROR, 1);
+        return -1;
     }
     if (operand > 127 || operand < 0) {
         return -2;

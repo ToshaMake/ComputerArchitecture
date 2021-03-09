@@ -29,10 +29,10 @@ int sc_regGet(int reg, int* value)
 {
     if (reg > 16 || reg < 1)
         return -1;
-    if ((flag & ~reg) == 0)
-        *value = 0;
-    else 
+    if (flag & reg)
         *value = 1;
+    else 
+        *value = 0;
 	return 0;
 }
 
