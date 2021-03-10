@@ -1,20 +1,38 @@
 #include "shell.h"
-#include "command.h"
-#include "bigchars.h"
-#include "readkey.h"
-#include "memory.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 static struct Cell{
     int posRow;
     int posCol;
 } currCell;
 
+struct itimerval nval, oval;
+
 static inline void setDefaultColor()
 {
     mt_setbgcolor(White);
     mt_setfgcolor(Black);
+}
+
+void inputMemory();
+void inputAccumulator();
+void inputCounter();
+void iterCounter();
+void sigHandler(int signo)
+{
+    if (signo == SIGALRM) {
+        iterCounter();
+        drawInstructionCounter();
+    }
+    if (signo == SIGUSR1) {
+        //printf("true");
+    }
+}
+
+void sigCheck() {
+    if (signal(SIGALRM, sigHandler) == SIG_ERR)
+    printf("\ncan't catch SIGALRM\n");
+    if (signal(SIGUSR1, sigHandler) == SIG_ERR)
+    printf("\ncan't catch SIGUSR1\n");
 }
 
 void repaintCell()
@@ -29,13 +47,16 @@ void repaintCell()
     drawBigCell();
 }
 
-void inputMemory();
-void inputAccumulator();
-void inputCounter();
-
 int shell() {
     currCell.posCol = 0;
     currCell.posRow = 0;
+
+    nval.it_interval.tv_sec = 60;
+    nval.it_interval.tv_usec = 0;
+    nval.it_value.tv_sec = 1;
+    nval.it_value.tv_usec = 0;
+
+    setitimer(ITIMER_REAL, &nval, &oval);
     setDefaultColor();
     rk_mytermregime(0, 0, 0, 0, 1);
     mt_clrscr();
@@ -45,8 +66,8 @@ int shell() {
     mt_gotoXY(1, 25);
     int key;
     while (1) {
+        sigCheck();
         rk_readkey(&key);
-
         switch (key) {
         case KEY_right: {
             if (currCell.posCol < 9) {
@@ -122,7 +143,7 @@ int shell() {
             mt_gotoXY(1, 25);
             inputAccumulator();
             getchar();
-            drawAccumulator();
+            repaintCell();
             break;
 
         }
@@ -130,7 +151,7 @@ int shell() {
             mt_gotoXY(1, 25);
             inputCounter();
             getchar();
-            drawInstructionCounter();
+            repaintCell();
             break;
         }
         case KEY_other:
@@ -209,6 +230,19 @@ static void getMemBuff(char buff[6], int const command, int const operand)
     buff[5] = '\0';
 }
 
+static void getBuff(char buff[6], int value)
+{
+    buff[0] = '+';
+    buff[4] = value % 10 + 0x30;
+    value = value / 10;
+    buff[3] = value % 10 + 0x30;
+    value = value / 10;
+    buff[2] = value % 10 + 0x30;
+    value = value / 10;
+    buff[1] = value % 10 + 0x30;
+    buff[5] = '\0';
+}
+
 void wrong_str_memory(char buff[6]) {
     buff[0] = '-';
     for (int i = 1; i < 5; i++)
@@ -255,7 +289,6 @@ void drawMemory() {
     mt_setfgcolor(White);
     drawMemIndex(currCell.posRow * 10 + currCell.posCol);
     setDefaultColor();
-    //putchar(' ');
 }
 
 void drawKeys() {
@@ -304,17 +337,13 @@ void drawInstructionCounter() {
     const int offsetCol = 63;
     const int offsetRow = 4;
     int val = sc_counterGet();
-    int comm, operand;
     char buff[6];
-
-    sc_commandDecode(val, &comm, &operand);
 
     bc_box(offsetCol, offsetRow, 20, 3);
     mt_gotoXY(offsetCol+1, offsetRow);
     printf("intructionCounter ");
     mt_gotoXY(offsetCol + 7, 1 + offsetRow);
-
-    getMemBuff(buff, comm, operand);
+    getBuff(buff, val);
 
     printf("%s", buff);
 }
@@ -490,13 +519,20 @@ void inputCounter()
 {
     printf("Input value:\n");
     rk_mytermregime(1, 0, 0, 1, 0);
-    int command, operand, result;
-    scanf("%2d%2d", &command, &operand);
-    int retval = sc_commandEncode(command, operand, &result);
-    if (retval != 0 || (command == 0)) {
+    int val;
+    scanf("%4d", &val);
+    if (val > 9999) {
         printf("Input error");
         rk_mytermregime(0, 0, 0, 0, 1);;
     }
-    sc_counterSet(result);
+    sc_counterSet(val);
     rk_mytermregime(0, 0, 0, 0, 1);
+}
+void iterCounter() {
+    int val, a;
+    a = sc_counterGet();
+    sc_regGet(CLOCKIGNORE, &val);
+    if (!val)
+        a++;
+    sc_counterSet(a);
 }
