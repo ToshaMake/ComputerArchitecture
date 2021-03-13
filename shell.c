@@ -5,8 +5,6 @@ static struct Cell{
     int posCol;
 } currCell;
 
-struct itimerval nval, oval;
-
 static inline void setDefaultColor()
 {
     mt_setbgcolor(White);
@@ -17,22 +15,24 @@ void inputMemory();
 void inputAccumulator();
 void inputCounter();
 void iterCounter();
+void repaintCell();
+void reset();
 void sigHandler(int signo)
 {
+    int clockFlag;
+    sc_regGet(CLOCKIGNORE, &clockFlag);
+    if (clockFlag)
+        return;
     if (signo == SIGALRM) {
         iterCounter();
-        drawInstructionCounter();
+        drawInstructionCounter(1);
+        drawMemory();
+        drawBigCell();
+        mt_gotoXY(1, 25);
     }
     if (signo == SIGUSR1) {
-        //printf("true");
+        reset();
     }
-}
-
-void sigCheck() {
-    if (signal(SIGALRM, sigHandler) == SIG_ERR)
-    printf("\ncan't catch SIGALRM\n");
-    if (signal(SIGUSR1, sigHandler) == SIG_ERR)
-    printf("\ncan't catch SIGUSR1\n");
 }
 
 void repaintCell()
@@ -47,10 +47,29 @@ void repaintCell()
     drawBigCell();
 }
 
+void reset() {
+    sc_regInit();
+    sc_memoryInit();
+    sc_accumSet(0);
+    sc_counterSet(0);
+    repaintCell();
+}
 int shell() {
+    sc_regInit();
+    sc_memoryInit();
     currCell.posCol = 0;
     currCell.posRow = 0;
+    
+    struct sigaction act;
+    act.sa_handler = &sigHandler;
+    act.sa_flags = SA_RESTART;
 
+    sigemptyset(&act.sa_mask);
+
+    sigaction(SIGALRM, &act, NULL);
+    sigaction(SIGUSR1, &act, NULL);
+
+    struct itimerval nval, oval;
     nval.it_interval.tv_sec = 60;
     nval.it_interval.tv_usec = 0;
     nval.it_value.tv_sec = 1;
@@ -66,7 +85,6 @@ int shell() {
     mt_gotoXY(1, 25);
     int key;
     while (1) {
-        sigCheck();
         rk_readkey(&key);
         switch (key) {
         case KEY_right: {
@@ -103,9 +121,7 @@ int shell() {
             break;
         }
         case KEY_i: {
-            sc_memoryLoad("reset.bin");
-            sc_regNULL();
-            repaintCell();
+            raise(SIGUSR1);
             break;
         }
         case KEY_s: {
@@ -333,19 +349,20 @@ void drawAccumulator() {
     printf("%s", buff);
 }
 
-void drawInstructionCounter() {
+void drawInstructionCounter(int full) {
     const int offsetCol = 63;
     const int offsetRow = 4;
     int val = sc_counterGet();
     char buff[6];
-
-    bc_box(offsetCol, offsetRow, 20, 3);
-    mt_gotoXY(offsetCol+1, offsetRow);
-    printf("intructionCounter ");
-    mt_gotoXY(offsetCol + 7, 1 + offsetRow);
-    getBuff(buff, val);
-
+    if (full) {
+        bc_box(offsetCol, offsetRow, 20, 3);
+        mt_gotoXY(offsetCol + 1, offsetRow);
+        printf("intructionCounter ");
+        mt_gotoXY(offsetCol + 7, 1 + offsetRow);
+    }
+     getBuff(buff, val);
     printf("%s", buff);
+    mt_gotoXY(1,25);
 }
 
 void get_zero(int value[2]) {
