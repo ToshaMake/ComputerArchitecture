@@ -42,7 +42,7 @@ void repaintCell()
     drawFlags();
     drawKeys();
     drawAccumulator();
-    drawOperation();
+    drawOperation(currCell.posRow * 10 + currCell.posCol);
     drawInstructionCounter();
     drawBigCell();
 }
@@ -189,17 +189,6 @@ void fillContext(){
     }
 }
 
-void drawOperation(){
-    int offsetCol = 63;
-    int offsetRow = 7;
-
-    bc_box(offsetCol, offsetRow, 20, 3);
-    mt_gotoXY(5 + offsetCol, offsetRow);
-    printf(" Operation ");
-    mt_gotoXY(7 + offsetCol ,offsetRow + 1);
-    printf("+00 : 00");
-}
-
 void printFlagReg() {
     int val;
     char printBuff[5] = { ' ', ' ', ' ', ' ', ' ' };
@@ -258,12 +247,57 @@ static void getBuff(char buff[6], int value)
     buff[1] = value % 10 + 0x30;
     buff[5] = '\0';
 }
+static void getOperationBuff(char buff[7], int const command, int const operand)
+{
+    buff[0] = '+';
+    buff[3] = ':';
+    buff[1] = command / 10 + 0x30;
+    buff[2] = command % 10 + 0x30;
+    buff[4] = operand / 10 + 0x30;
+    buff[5] = operand % 10 + 0x30;
+    buff[6] = '\0';
+}
 
 void wrong_str_memory(char buff[6]) {
     buff[0] = '-';
     for (int i = 1; i < 5; i++)
         buff[i] = '0';
     buff[5] = '\0';
+}
+
+void wrong_str_operation(char buff[7]) {
+    buff[0] = '-';
+    for (int i = 1; i < 6; i++)
+        buff[i] = '0';
+    buff[3] = ':';
+    buff[6] = '\0';
+}
+
+void drawOperation(int index) {
+    int memValue;
+    int command;
+    int operand;
+    int retval;
+    int offsetCol = 63;
+    int offsetRow = 7;
+    char buff[7];
+
+    bc_box(offsetCol, offsetRow, 20, 3);
+    mt_gotoXY(5 + offsetCol, offsetRow);
+    printf(" Operation ");
+    mt_gotoXY(7 + offsetCol, offsetRow + 1);
+    retval = sc_memoryGet(index, &memValue);
+    if (retval != 0) {
+        wrong_str_operation(buff);
+        printf("%s", buff);
+    }
+    retval = sc_commandDecode(memValue, &command, &operand);
+    if (retval != 0) {
+        wrong_str_operation(buff);
+        printf("%s", buff);
+    }
+    getOperationBuff(buff, command, operand);
+    printf("%s", buff);
 }
 
 static void drawMemIndex(int index) {
@@ -278,13 +312,14 @@ static void drawMemIndex(int index) {
         wrong_str_memory(buff);
         printf("%s", buff);
     }
-
+    getBuff(buff, memValue);
     retval = sc_commandDecode(memValue, &command, &operand);
     if (retval != 0) {
         wrong_str_memory(buff);
         printf("%s", buff);
     }
-    getMemBuff(buff, command, operand);
+    //getMemBuff(buff, command, operand);
+    //getBuff(buff, memValue);
     printf("%s", buff);
 }
 
@@ -461,13 +496,13 @@ void choiseBigVal(int val, int retVal[2])
 }
 
 void drawBigCell() {
-    int memVal, command, operand;
+    int memValue, command, operand;
     int offsetRow = 13;
     int offsetCol = 1;
     int valueChar[2];
     bc_box(offsetCol, offsetRow, 46, 10);
-    sc_memoryGet(currCell.posRow * 10 + currCell.posCol, &memVal);
-    if (sc_commandDecode(memVal, &command, &operand) != 0) {
+    sc_memoryGet(currCell.posRow * 10 + currCell.posCol, &memValue);
+    if (sc_commandDecode(memValue, &command, &operand) != 0) {
         command = 0;
         operand = 0;
         get_minus(valueChar);
@@ -486,19 +521,27 @@ void drawBigCell() {
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
     }
     else {
+        int val1, val2, val3, val4;
+        val4 = memValue % 10;
+        memValue = memValue / 10;
+        val3 = memValue % 10;
+        memValue = memValue / 10;
+        val2 = memValue % 10;
+        memValue = memValue / 10;
+        val1 = memValue % 10;
         get_plus(valueChar);
         bc_printbigchar(valueChar, offsetCol+1, offsetRow + 1, Black, White);        
         offsetCol += 9;
-        choiseBigVal(command / 10, valueChar);
+        choiseBigVal(val1, valueChar);
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);       
         offsetCol += 9;
-        choiseBigVal(command % 10, valueChar);
+        choiseBigVal(val2, valueChar);
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);      
         offsetCol += 9;
-        choiseBigVal(operand / 10, valueChar);
+        choiseBigVal(val3, valueChar);
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);    
         offsetCol += 9;
-        choiseBigVal(operand % 10, valueChar);
+        choiseBigVal(val4, valueChar);
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
     }
     mt_gotoXY(1, 25);
