@@ -5,74 +5,85 @@ int main(){
     tLBA* lba = malloc(32);
     tLARGE* large = malloc(24);
     tIDECHS* idechs = malloc(28);
-
+	typedef struct{
+		int active;
+		tLBA* l_start;
+		tCHS* c_start;
+		tCHS* finish;
+		uint32_t size;
+	}Table;
     int h;
     int s;
     int c;
-    int sectionSize;
-    int diskSize;
+	int sectionSize = 1;
     int choose;
-    int freeSpace = 1;
-    char active;
-    int size = 11;
+	int freeSpace = 4000;
  
-	int tableMas[size][size];
-   
-    printf("Input geometry\n");
+	Table table[128]; //= malloc(sizeof(Table)* 128);
+    printf("Input IDECHS geometry\n");
     printf("C: ");
     scanf("%d", &c);
     printf("H: ");
     scanf("%d", &h);
     printf("S: ");
     scanf("%d", &s);
-    //printf("Input disk size: ");
-    //scanf("%d", &diskSize);
-    printf("Free space: ");
-    scanf("%d", &freeSpace);
-    printf("Input section size: ");
-    scanf("%d", &sectionSize);
-    
+	idechs->c = c;
+	idechs->h = h;
+	idechs->s = s;
+	g_idechs2lba(idechs, lba);
+	double a = lba->s * 512;
+	a /= 1024;
+	a /= 1024;
+	a /= 1024;
+	printf("Disk size: %lf GB\n", a);
+    //printf("Free space(KiB): ");
+    //scanf("%d", &freeSpace);
     printf("Тип:\n");
-    printf("1 - CHS 2- LARGE 3 - IDECHS\n");
+    printf("1 - FAT32 2- Linux swap 3 - HPFS/NTFS\n");
     scanf("%d", &choose);
-    
-        switch(choose){
-		case 1:
-			chs -> c = c;
-			chs -> h = h;
-			chs -> s = s;
-			break;
-		case 2:
-			large -> c = c;
-			large -> h = h;
-			large -> s = s;
-			break;
-		case 3:
-			idechs -> c = c;
-			idechs -> h = h;
-			idechs -> s = s;
-			break;
-		default:
-			printf("Wrong choose");
-			return 0;
+	printf("Free space: %d\n", freeSpace - 0);
+	int i = 0;
+	table[i].c_start = malloc(20);
+	table[i].finish = malloc(20);
+	table[i].l_start = malloc(32);
+	table[i].l_start->s = 1;
+	g_lb2chs(table[i].l_start, table[i].c_start);
+
+    while ( freeSpace - sectionSize > 0){
+	printf("Input section size: ");
+    scanf("%d", &sectionSize);
+	if (sectionSize == 0)
+		break;
+	if (freeSpace - sectionSize < 0)
+		break;
+	table[i].size = sectionSize;
+	if (i != 0) {
+		table[i].c_start = malloc(20);
+		table[i].finish = malloc(20);
+		table[i].l_start = malloc(32);
+		table[i].l_start->s = table[i - 1].l_start->s + table[i - 1].size;
+		g_lb2chs(table[i].l_start, table[i].c_start);
+	}
+	freeSpace -= sectionSize;
+	lba->s = sectionSize + table[i].l_start->s;
+	g_lb2chs(lba, table[i].finish);
+	printf("Set section as active (1/0):\n");
+	scanf("%d", &table[i].active);
+	if ((table[i].active == 1) && (i!=0)) {
+		for (int j = 0; j < i; j++) {
+			table[j].active = 0;
 		}
-	printf("Free space: %d\n", freeSpace - sectionSize);
-
-	printf("Set section as active (y/n):\n");
-	scanf("%c", &active);
-	mas[0][0] = active;
-	mas[0][1] = 0;
-	mas[0][2] = 0;
-	mas[0][3] = 1;
-	
-    while ( (freeSpace -= sectionSize)> 0){
-		
-	printf("Input section size\n");
-    scanf("%d", &sectionSize);	
-	printf("Set section as active (y/n):\n");
-	scanf("%c", &active);
-	printf("Free space: %d\n", freeSpace - sectionSize);
-	}	
-	printf("Active | CSH start | Type | CHS finish | LBA start | Size\n");
-
+	}
+	printf("Free space: %d\n", freeSpace);
+	i++;
+	sectionSize = 0;
+	}
+	printf("Active| CHS start | Type | CHS finish | LBA start | Size\n");
+	for (int j = 0; j < i; j++) {
+		printf("   %d ", table[j].active);
+		printf("	  %d %d %d ", table[j].c_start->c, table[j].c_start->h, table[j].c_start->s);
+		printf("    %d ", choose);
+		printf("       %d %d %d ", table[j].finish->c, table[j].finish->h, table[j].finish->s);
+		printf("     %d	     %d \n", table[j].l_start->s, table[j].size);
+	}
 }
