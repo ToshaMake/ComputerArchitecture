@@ -74,7 +74,6 @@ int shell() {
     nval.it_value.tv_sec = 1;
     nval.it_value.tv_usec = 0;
 
-    setitimer(ITIMER_REAL, &nval, &oval);
     setDefaultColor();
     rk_mytermregime(0, 0, 0, 0, 1);
     mt_clrscr();
@@ -181,11 +180,14 @@ int shell() {
             repaintCell();
             break;
         }
+        case KEY_r: {
+            setitimer(ITIMER_REAL, &nval, &oval);
+            break;
+        }
         case KEY_other:
             break;
         }
     }
-
 }
 
 void fillContext(){
