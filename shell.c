@@ -5,6 +5,8 @@ static struct Cell{
     int posCol;
 } currCell;
 
+struct sigaction act;
+
 static inline void setDefaultColor()
 {
     mt_setbgcolor(White);
@@ -49,6 +51,7 @@ void repaintCell()
 
 void reset() {
     sc_regInit();
+    sc_regSet(8,1);
     sc_memoryInit();
     sc_accumSet(0);
     repaintCell();
@@ -58,22 +61,22 @@ int shell() {
     sc_memoryInit();
     currCell.posCol = 0;
     currCell.posRow = 0;
-    
-    struct sigaction act;
+
     act.sa_handler = &sigHandler;
     act.sa_flags = SA_RESTART;
-
     sigemptyset(&act.sa_mask);
+    sc_regSet(CLOCKIGNORE, 1);
 
     sigaction(SIGALRM, &act, NULL);
     sigaction(SIGUSR1, &act, NULL);
 
     struct itimerval nval, oval;
-    nval.it_interval.tv_sec = 60;
+    nval.it_interval.tv_sec = 5;
     nval.it_interval.tv_usec = 0;
     nval.it_value.tv_sec = 1;
     nval.it_value.tv_usec = 0;
 
+    setitimer(ITIMER_REAL, &nval, &oval);
     setDefaultColor();
     rk_mytermregime(0, 0, 0, 0, 1);
     mt_clrscr();
@@ -159,9 +162,14 @@ int shell() {
             break;
         }
         case KEY_enter: {
+            int value;
+            sc_regGet(CLOCKIGNORE, &value);
+            sc_regSet(CLOCKIGNORE, 1);
             mt_gotoXY(1, 25);
             inputMemory();
             getchar();
+            if (!value)
+                sc_regSet(CLOCKIGNORE,0);
             repaintCell();
             break;
         }
@@ -181,7 +189,8 @@ int shell() {
             break;
         }
         case KEY_r: {
-            setitimer(ITIMER_REAL, &nval, &oval);
+            sc_regSet(CLOCKIGNORE, 0);
+            repaintCell();
             break;
         }
         case KEY_other:

@@ -16,9 +16,9 @@ int sc_regSet(int reg, int value)
 {
     if (reg > 16 || reg < 1) 
         return -1;
-    if (value = 0)
-        flag = flag & ~reg;
-    else if (value = 1)
+    if (value == 0)
+        flag = ~reg & flag;
+    else if (value == 1)
         flag = flag | reg;
     else return -2;
 
