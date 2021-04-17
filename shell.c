@@ -51,7 +51,6 @@ void reset() {
     sc_regInit();
     sc_memoryInit();
     sc_accumSet(0);
-    sc_counterSet(0);
     repaintCell();
 }
 int shell() {
@@ -90,6 +89,9 @@ int shell() {
         case KEY_right: {
             if (currCell.posCol < 9) {
                 currCell.posCol++;
+                int a = sc_counterGet();
+                a+=1;
+                sc_counterSet(a);
                 repaintCell();
             }
             break;
@@ -97,6 +99,9 @@ int shell() {
         case KEY_down: {
             if (currCell.posRow < 9) {
                 currCell.posRow++;
+                int a = sc_counterGet();
+                a+=10;
+                sc_counterSet(a);
                 repaintCell();
             }
             break;
@@ -104,6 +109,9 @@ int shell() {
         case KEY_left: {
             if (currCell.posCol > 0) {
                 currCell.posCol--;
+                int a = sc_counterGet();
+                a-=1;
+                sc_counterSet(a);
                 repaintCell();
             }
             break;
@@ -111,6 +119,9 @@ int shell() {
         case KEY_up: {
             if (currCell.posRow > 0) {
                 currCell.posRow--;
+                int a = sc_counterGet();
+                a-=10;
+                sc_counterSet(a);
                 repaintCell();
             }
             break;
@@ -594,5 +605,12 @@ void iterCounter() {
     sc_regGet(CLOCKIGNORE, &val);
     if (!val)
         a++;
+    if (a == 100){
+        a = 0;
+        sc_counterSet(a);
+    }else{
     sc_counterSet(a);
+    }
+    currCell.posCol = a % 10;
+    currCell.posRow = a / 10;
 }
