@@ -10,7 +10,7 @@ ADD_LIBRARY(BigChars STATIC bigchars.c bigchars.h)
 
 ADD_LIBRARY(ReadKey STATIC readkey.c readkey.h)
 
-ADD_LIBRARY(Shell STATIC shell.c shell.h)
+ADD_LIBRARY(Shell STATIC shell.c shell.h cpu.c cpu.h)
 
 ADD_EXECUTABLE(MySimpleComputer main.c)
 

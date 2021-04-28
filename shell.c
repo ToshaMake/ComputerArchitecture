@@ -1,6 +1,7 @@
 #include "shell.h"
 
-static struct Cell{
+static struct Cell
+{
     int posRow;
     int posCol;
 } currCell;
@@ -25,14 +26,16 @@ void sigHandler(int signo)
     sc_regGet(CLOCKIGNORE, &clockFlag);
     if (clockFlag)
         return;
-    if (signo == SIGALRM) {
+    if (signo == SIGALRM)
+    {
         iterCounter();
         drawInstructionCounter(1);
         drawMemory();
         drawBigCell();
         mt_gotoXY(1, 25);
     }
-    if (signo == SIGUSR1) {
+    if (signo == SIGUSR1)
+    {
         reset();
     }
 }
@@ -49,14 +52,16 @@ void repaintCell()
     drawBigCell();
 }
 
-void reset() {
+void reset()
+{
     sc_regInit();
-    sc_regSet(8,1);
+    sc_regSet(8, 1);
     sc_memoryInit();
     sc_accumSet(0);
     repaintCell();
 }
-int shell() {
+int shell()
+{
     sc_regInit();
     sc_memoryInit();
     currCell.posCol = 0;
@@ -76,7 +81,7 @@ int shell() {
     nval.it_value.tv_sec = 1;
     nval.it_value.tv_usec = 0;
 
-    setitimer(ITIMER_REAL, &nval, &oval);
+    //setitimer(ITIMER_REAL, &nval, &oval);
     setDefaultColor();
     rk_mytermregime(0, 0, 0, 0, 1);
     mt_clrscr();
@@ -85,59 +90,73 @@ int shell() {
 
     mt_gotoXY(1, 25);
     int key;
-    while (1) {
+    while (1)
+    {
         rk_readkey(&key);
-        switch (key) {
-        case KEY_right: {
-            if (currCell.posCol < 9) {
+        switch (key)
+        {
+        case KEY_right:
+        {
+            if (currCell.posCol < 9)
+            {
                 currCell.posCol++;
                 int a = sc_counterGet();
-                a+=1;
+                a += 1;
                 sc_counterSet(a);
                 repaintCell();
             }
             break;
         }
-        case KEY_down: {
-            if (currCell.posRow < 9) {
+        case KEY_down:
+        {
+            if (currCell.posRow < 9)
+            {
                 currCell.posRow++;
                 int a = sc_counterGet();
-                a+=10;
+                a += 10;
                 sc_counterSet(a);
                 repaintCell();
             }
             break;
         }
-        case KEY_left: {
-            if (currCell.posCol > 0) {
+        case KEY_left:
+        {
+            if (currCell.posCol > 0)
+            {
                 currCell.posCol--;
                 int a = sc_counterGet();
-                a-=1;
+                a -= 1;
                 sc_counterSet(a);
                 repaintCell();
             }
             break;
         }
-        case KEY_up: {
-            if (currCell.posRow > 0) {
+        case KEY_up:
+        {
+            if (currCell.posRow > 0)
+            {
                 currCell.posRow--;
                 int a = sc_counterGet();
-                a-=10;
+                a -= 10;
                 sc_counterSet(a);
                 repaintCell();
             }
             break;
         }
-        case KEY_q: {
+        case KEY_q:
+        {
             rk_mytermregime(1, 0, 0, 1, 1);
             exit(0);
             break;
         }
-        case KEY_i: {
-            raise(SIGUSR1);
+        case KEY_i:
+        {
+            reset();
+            //raise(SIGUSR1);
             break;
         }
-        case KEY_s: {
+        case KEY_s:
+        {
             mt_gotoXY(1, 25);
             rk_mytermregime(1, 0, 0, 1, 1);
             printf("file name:\n");
@@ -149,7 +168,8 @@ int shell() {
             repaintCell();
             break;
         }
-        case KEY_l: {
+        case KEY_l:
+        {
             mt_gotoXY(1, 25);
             rk_mytermregime(1, 0, 0, 1, 1);
             printf("file name:\n");
@@ -161,7 +181,8 @@ int shell() {
             repaintCell();
             break;
         }
-        case KEY_enter: {
+        case KEY_enter:
+        {
             int value;
             sc_regGet(CLOCKIGNORE, &value);
             sc_regSet(CLOCKIGNORE, 1);
@@ -169,27 +190,30 @@ int shell() {
             inputMemory();
             getchar();
             if (!value)
-                sc_regSet(CLOCKIGNORE,0);
+                sc_regSet(CLOCKIGNORE, 0);
             repaintCell();
             break;
         }
-        case KEY_f5: {
+        case KEY_f5:
+        {
             mt_gotoXY(1, 25);
             inputAccumulator();
             getchar();
             repaintCell();
             break;
-
         }
-        case KEY_f6: {
+        case KEY_f6:
+        {
             mt_gotoXY(1, 25);
             inputCounter();
             getchar();
             repaintCell();
             break;
         }
-        case KEY_r: {
+        case KEY_r:
+        {
             sc_regSet(CLOCKIGNORE, 0);
+            CU();
             repaintCell();
             break;
         }
@@ -199,21 +223,24 @@ int shell() {
     }
 }
 
-void fillContext(){
+void fillContext()
+{
     int height, width;
     mt_getscreensize(&height, &width);
 
     mt_gotoXY(0, 0);
-    for (int i = 0; i < height; i++) {
+    for (int i = 0; i < height; i++)
+    {
         for (int j = 0; j < width; j++)
             putchar(' ');
         putchar('\n');
     }
 }
 
-void printFlagReg() {
+void printFlagReg()
+{
     int val;
-    char printBuff[5] = { ' ', ' ', ' ', ' ', ' ' };
+    char printBuff[5] = {' ', ' ', ' ', ' ', ' '};
 
     sc_regGet(OVERFLOW, &val);
     if (val)
@@ -231,17 +258,19 @@ void printFlagReg() {
     if (val)
         printBuff[4] = 'E';
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         putchar(printBuff[i]);
         putchar(' ');
     }
 }
 
-void drawFlags(){
+void drawFlags()
+{
     int offsetCol = 63;
     int offsetRow = 10;
     bc_box(offsetCol, offsetRow, 20, 3);
-    mt_gotoXY(offsetCol+6, offsetRow);
+    mt_gotoXY(offsetCol + 6, offsetRow);
     printf(" Flags ");
     mt_gotoXY(offsetCol + 7, 1 + offsetRow);
     printFlagReg();
@@ -256,7 +285,33 @@ static void getMemBuff(char buff[6], int const command, int const operand)
     buff[4] = operand % 10 + 0x30;
     buff[5] = '\0';
 }
+static void getMemBuff16(char buff[6], int const command, int const operand)
+{
+    int a, b, c, d;
+    if (command / 16 >= 10)
+        a = 0x37;
+    else
+        a = 0x30;
+    if (command % 16 >= 10)
+        b = 0x37;
+    else
+        b = 0x30;
+    if (operand / 16 >= 10)
+        c = 0x37;
+    else
+        c = 0x30;
+    if (operand % 16 >= 10)
+        d = 0x37;
+    else
+        d = 0x30;
 
+    buff[0] = '+';
+    buff[1] = command / 16 + a;
+    buff[2] = command % 16 + b;
+    buff[3] = operand / 16 + c;
+    buff[4] = operand % 16 + d;
+    buff[5] = '\0';
+}
 static void getBuff(char buff[6], int value)
 {
     buff[0] = '+';
@@ -269,25 +324,29 @@ static void getBuff(char buff[6], int value)
     buff[1] = value % 10 + 0x30;
     buff[5] = '\0';
 }
-static void getOperationBuff(char buff[7], int const command, int const operand)
+static void getOperationBuff(char buff[8], int command, int operand)
 {
     buff[0] = '+';
     buff[3] = ':';
     buff[1] = command / 10 + 0x30;
     buff[2] = command % 10 + 0x30;
-    buff[4] = operand / 10 + 0x30;
-    buff[5] = operand % 10 + 0x30;
-    buff[6] = '\0';
+    buff[4] = operand / 100 + 0x30;
+    operand = operand % 100;
+    buff[5] = operand / 10 + 0x30;
+    buff[6] = operand % 10 + 0x30;
+    buff[7] = '\0';
 }
 
-void wrong_str_memory(char buff[6]) {
+void wrong_str_memory(char buff[6])
+{
     buff[0] = '-';
     for (int i = 1; i < 5; i++)
         buff[i] = '0';
     buff[5] = '\0';
 }
 
-void wrong_str_operation(char buff[7]) {
+void wrong_str_operation(char buff[7])
+{
     buff[0] = '-';
     for (int i = 1; i < 6; i++)
         buff[i] = '0';
@@ -295,26 +354,29 @@ void wrong_str_operation(char buff[7]) {
     buff[6] = '\0';
 }
 
-void drawOperation(int index) {
+void drawOperation(int index)
+{
     int memValue;
     int command;
     int operand;
     int retval;
     int offsetCol = 63;
     int offsetRow = 7;
-    char buff[7];
+    char buff[8];
 
     bc_box(offsetCol, offsetRow, 20, 3);
     mt_gotoXY(5 + offsetCol, offsetRow);
     printf(" Operation ");
     mt_gotoXY(7 + offsetCol, offsetRow + 1);
     retval = sc_memoryGet(index, &memValue);
-    if (retval != 0) {
+    if (retval != 0)
+    {
         wrong_str_operation(buff);
         printf("%s", buff);
     }
     retval = sc_commandDecode(memValue, &command, &operand);
-    if (retval != 0) {
+    if (retval != 0)
+    {
         wrong_str_operation(buff);
         printf("%s", buff);
     }
@@ -322,7 +384,8 @@ void drawOperation(int index) {
     printf("%s", buff);
 }
 
-static void drawMemIndex(int index) {
+static void drawMemIndex(int index)
+{
     int memValue;
     int command;
     int operand;
@@ -330,29 +393,34 @@ static void drawMemIndex(int index) {
     char buff[6];
 
     retval = sc_memoryGet(index, &memValue);
-    if (retval != 0) {
-        wrong_str_memory(buff);
-        printf("%s", buff);
-    }
-    getBuff(buff, memValue);
-    retval = sc_commandDecode(memValue, &command, &operand);
-    if (retval != 0) {
+    if (retval != 0)
+    {
         wrong_str_memory(buff);
         printf("%s", buff);
     }
     //getMemBuff(buff, command, operand);
     //getBuff(buff, memValue);
+    retval = sc_commandDecode(memValue, &command, &operand);
+    if (retval != 0)
+    {
+        wrong_str_memory(buff);
+        printf("%s", buff);
+    }
+    getMemBuff16(buff, command, operand);
     printf("%s", buff);
 }
 
-void drawMemory() {
+void drawMemory()
+{
     bc_box(1, 1, 62, 12);
     mt_gotoXY(26, 1);
     printf(" Memory ");
 
-    for (int row = 0; row < 10; row++) {
-        for (int col = 0; col < 10; col++) {
-            mt_gotoXY((col *6) + 2, row + 2);
+    for (int row = 0; row < 10; row++)
+    {
+        for (int col = 0; col < 10; col++)
+        {
+            mt_gotoXY((col * 6) + 2, row + 2);
             drawMemIndex(row * 10 + col);
             putchar(' ');
         }
@@ -364,31 +432,33 @@ void drawMemory() {
     setDefaultColor();
 }
 
-void drawKeys() {
+void drawKeys()
+{
     int offsetCol = 47;
     int offsetRow = 13;
     bc_box(offsetCol, offsetRow, 36, 10);
-    mt_gotoXY(offsetCol+1, offsetRow);
+    mt_gotoXY(offsetCol + 1, offsetRow);
     printf(" Keys:");
     mt_gotoXY(offsetCol + 1, offsetRow + 1);
     printf("q - quit");
-    mt_gotoXY(offsetCol+1, offsetRow+2);
+    mt_gotoXY(offsetCol + 1, offsetRow + 2);
     printf("l - load");
-    mt_gotoXY(offsetCol+1, offsetRow+3);
+    mt_gotoXY(offsetCol + 1, offsetRow + 3);
     printf("s - save");
-    mt_gotoXY(offsetCol+1, offsetRow+4);
+    mt_gotoXY(offsetCol + 1, offsetRow + 4);
     printf("r - run");
-    mt_gotoXY(offsetCol+1, offsetRow+5);
+    mt_gotoXY(offsetCol + 1, offsetRow + 5);
     printf("t - step");
-    mt_gotoXY(offsetCol+1, offsetRow+6);
+    mt_gotoXY(offsetCol + 1, offsetRow + 6);
     printf("i - reset");
-    mt_gotoXY(offsetCol+1, offsetRow+7);
+    mt_gotoXY(offsetCol + 1, offsetRow + 7);
     printf("F5 - accumulator");
-    mt_gotoXY(offsetCol+1, offsetRow+8);
+    mt_gotoXY(offsetCol + 1, offsetRow + 8);
     printf("F6 - instructionCounter");
 }
 
-void drawAccumulator() {
+void drawAccumulator()
+{
     int offsetCol = 63;
     int val = sc_accumGet();
     int comm, operand;
@@ -397,93 +467,138 @@ void drawAccumulator() {
     sc_commandDecode(val, &comm, &operand);
 
     bc_box(offsetCol, 1, 20, 3);
-    mt_gotoXY(offsetCol+4, 1);
+    mt_gotoXY(offsetCol + 4, 1);
     printf(" accumulator ");
-    mt_gotoXY(offsetCol+7, 2);
+    mt_gotoXY(offsetCol + 7, 2);
 
     getMemBuff(buff, comm, operand);
 
     printf("%s", buff);
 }
 
-void drawInstructionCounter(int full) {
+void drawInstructionCounter(int full)
+{
     const int offsetCol = 63;
     const int offsetRow = 4;
     int val = sc_counterGet();
     char buff[6];
-    if (full) {
+    if (full)
+    {
         bc_box(offsetCol, offsetRow, 20, 3);
         mt_gotoXY(offsetCol + 1, offsetRow);
         printf("intructionCounter ");
         mt_gotoXY(offsetCol + 7, 1 + offsetRow);
     }
-     getBuff(buff, val);
+    getBuff(buff, val);
     printf("%s", buff);
-    mt_gotoXY(1,25);
+    mt_gotoXY(1, 25);
 }
 
-void get_zero(int value[2]) {
+void get_zero(int value[2])
+{
     value[0] = 1717976064;
     value[1] = 3958374;
 }
 
-void get_one(int value[2]) {
+void get_one(int value[2])
+{
     value[0] = 1010315264;
     value[1] = 3158064;
 }
 
-void get_two(int value[2]) {
+void get_two(int value[2])
+{
     value[0] = 1010842624;
     value[1] = 8258050;
 }
 
-void get_three(int value[2]) {
+void get_three(int value[2])
+{
     value[0] = 2120252928;
     value[1] = 8282238;
 }
 
-void get_four(int value[2]) {
+void get_four(int value[2])
+{
     value[0] = 2120640000;
     value[1] = 6316158;
 }
 
-void get_five(int value[2]) {
+void get_five(int value[2])
+{
     value[0] = 1040350720;
     value[1] = 4079680;
 }
 
-void get_six(int value[2]) {
+void get_six(int value[2])
+{
     value[0] = 35789824;
     value[1] = 1974814;
 }
 
-void get_seven(int value[2]) {
+void get_seven(int value[2])
+{
     value[0] = 811630080;
     value[1] = 396312;
 }
 
-void get_eight(int value[2]) {
+void get_eight(int value[2])
+{
     value[0] = 1013332992;
     value[1] = 3958374;
 }
 
-void get_nine(int value[2]) {
+void get_nine(int value[2])
+{
     value[0] = 2087074816;
     value[1] = 3956832;
 }
 
-void get_plus(int value[2]) {
+void get_plus(int value[2])
+{
     value[0] = 2115508224;
     value[1] = 1579134;
 }
-void get_minus(int value[2]) {
+void get_minus(int value[2])
+{
     value[0] = 2113929216;
     value[1] = 126;
+}
+void get_a(int value[2])
+{
+    value[0] = 2118269952;
+    value[1] = 4342338;
+}
+void get_b(int value[2])
+{
+    value[0] = 1044528640;
+    value[1] = 4080194;
+}
+void get_c(int value[2])
+{
+    value[0] = 37895168;
+    value[1] = 3949058;
+}
+void get_e(int value[2])
+{
+    value[0] = 2114092544;
+    value[1] = 8258050;
+}
+void get_d(int value[2])
+{
+    value[0] = 1111637504;
+    value[1] = 4080194;
+}
+void get_f(int value[2])
+{
+    value[0] = 33717760;
+    value[1] = 131646;
 }
 
 void choiseBigVal(int val, int retVal[2])
 {
-    switch (val) {
+    switch (val)
+    {
     case 0:
         get_zero(retVal);
         return;
@@ -514,21 +629,41 @@ void choiseBigVal(int val, int retVal[2])
     case 9:
         get_nine(retVal);
         return;
+    case 10:
+        get_a(retVal);
+        return;
+    case 11:
+        get_b(retVal);
+        return;
+    case 12:
+        get_c(retVal);
+        return;
+    case 13:
+        get_d(retVal);
+        return;
+    case 14:
+        get_e(retVal);
+        return;
+    case 15:
+        get_f(retVal);
+        return;
     }
 }
 
-void drawBigCell() {
+void drawBigCell()
+{
     int memValue, command, operand;
     int offsetRow = 13;
     int offsetCol = 1;
     int valueChar[2];
     bc_box(offsetCol, offsetRow, 46, 10);
     sc_memoryGet(currCell.posRow * 10 + currCell.posCol, &memValue);
-    if (sc_commandDecode(memValue, &command, &operand) != 0) {
+    if (sc_commandDecode(memValue, &command, &operand) != 0)
+    {
         command = 0;
         operand = 0;
         get_minus(valueChar);
-        bc_printbigchar(valueChar, offsetCol+1, offsetRow+1, Black, White);
+        bc_printbigchar(valueChar, offsetCol + 1, offsetRow + 1, Black, White);
         offsetCol += 9;
         get_zero(valueChar);
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
@@ -542,28 +677,29 @@ void drawBigCell() {
         get_zero(valueChar);
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
     }
-    else {
-        int val1, val2, val3, val4;
-        val4 = memValue % 10;
-        memValue = memValue / 10;
-        val3 = memValue % 10;
-        memValue = memValue / 10;
-        val2 = memValue % 10;
-        memValue = memValue / 10;
-        val1 = memValue % 10;
+    else
+    {
+        // int val1, val2, val3, val4;
+        // val4 = memValue % 10;
+        // memValue = memValue / 10;
+        // val3 = memValue % 10;
+        // memValue = memValue / 10;
+        // val2 = memValue % 10;
+        // memValue = memValue / 10;
+        // val1 = memValue % 10;
         get_plus(valueChar);
-        bc_printbigchar(valueChar, offsetCol+1, offsetRow + 1, Black, White);        
+        bc_printbigchar(valueChar, offsetCol + 1, offsetRow + 1, Black, White);
         offsetCol += 9;
-        choiseBigVal(val1, valueChar);
-        bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);       
+        choiseBigVal(command / 16, valueChar);
+        bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
         offsetCol += 9;
-        choiseBigVal(val2, valueChar);
-        bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);      
+        choiseBigVal(command % 16, valueChar);
+        bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
         offsetCol += 9;
-        choiseBigVal(val3, valueChar);
-        bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);    
+        choiseBigVal(operand / 16, valueChar);
+        bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
         offsetCol += 9;
-        choiseBigVal(val4, valueChar);
+        choiseBigVal(operand % 16, valueChar);
         bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
     }
     mt_gotoXY(1, 25);
@@ -573,7 +709,7 @@ void inputMemory()
     printf("Input value:\n");
     rk_mytermregime(1, 0, 0, 1, 1);
     int command, operand, result;
-    scanf("%2d%2d", &command, &operand);
+    scanf("%2d%4d", &command, &operand);
     int retval = sc_commandEncode(command, operand, &result);
     if (retval != 0)
         printf("Input error");
@@ -589,9 +725,11 @@ void inputAccumulator()
     int command, operand, result;
     scanf("%2d%2d", &command, &operand);
     int retval = sc_commandEncode(command, operand, &result);
-    if (retval != 0) {
+    if (retval != 0)
+    {
         printf("Input error");
-        rk_mytermregime(0, 0, 0, 0, 1);;
+        rk_mytermregime(0, 0, 0, 0, 1);
+        ;
     }
     sc_accumSet(result);
     rk_mytermregime(0, 0, 0, 0, 1);
@@ -603,24 +741,30 @@ void inputCounter()
     rk_mytermregime(1, 0, 0, 1, 0);
     int val;
     scanf("%4d", &val);
-    if (val > 9999) {
+    if (val > 99)
+    {
         printf("Input error");
-        rk_mytermregime(0, 0, 0, 0, 1);;
+        rk_mytermregime(0, 0, 0, 0, 1);
+        ;
     }
     sc_counterSet(val);
     rk_mytermregime(0, 0, 0, 0, 1);
 }
-void iterCounter() {
+void iterCounter()
+{
     int val, a;
     a = sc_counterGet();
     sc_regGet(CLOCKIGNORE, &val);
     if (!val)
         a++;
-    if (a == 100){
+    if (a == 100)
+    {
         a = 0;
         sc_counterSet(a);
-    }else{
-    sc_counterSet(a);
+    }
+    else
+    {
+        sc_counterSet(a);
     }
     currCell.posCol = a % 10;
     currCell.posRow = a / 10;
