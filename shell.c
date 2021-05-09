@@ -366,7 +366,7 @@ void drawOperation(int index)
         wrong_str_operation(buff);
         printf("%s", buff);
     }
-    if (!sign[currCell.posRow * 10 + currCell.posCol])
+    if (memValue < 32768)
     {
         retval = sc_commandDecode(memValue, &command, &operand);
         if (retval != 0)
@@ -378,6 +378,7 @@ void drawOperation(int index)
     }
     else
     {
+        memValue -= 32768;
         getOperationBuffNum(buff, memValue);
     }
 
@@ -398,7 +399,7 @@ static void drawMemIndex(int index)
         wrong_str_memory(buff);
         printf("%s", buff);
     }
-    if (!sign[index])
+    if (memValue < 32768)
     {
         retval = sc_commandDecode(memValue, &command, &operand);
         if (retval != 0)
@@ -410,7 +411,7 @@ static void drawMemIndex(int index)
     }
     else
     {
-        getMemBuffNum(buff, memValue);
+        getMemBuffNum(buff, memValue - 32768);
     }
     printf("%s", buff);
 }
@@ -666,8 +667,9 @@ void drawBigCell()
     int valueChar[2];
     bc_box(offsetCol, offsetRow, 46, 10);
     sc_memoryGet(currCell.posRow * 10 + currCell.posCol, &memValue);
-    if (sign[currCell.posRow * 10 + currCell.posCol])
+    if (memValue >= 32768)
     {
+        memValue -= 32768;
         int val1, val2, val3, val4;
         val4 = memValue % 16;
         memValue = memValue / 16;

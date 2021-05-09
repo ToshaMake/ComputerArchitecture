@@ -25,7 +25,7 @@ void inputMemory(int address)
     {
         int result;
         scanf("%4d", &result);
-        sc_memorySet(address, result);
+        sc_memorySet(address, result + 32768);
     }
     rk_mytermregime(0, 0, 0, 0, 1);
 }
