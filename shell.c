@@ -37,7 +37,7 @@ void sigHandler(int signo)
         drawBigCell();
         drawFlags();
         drawAccumulator();
-        mt_gotoXY(1, 25);
+        mt_gotoXY(1, 23);
     }
     else if (signo == SIGUSR1)
     {
@@ -51,7 +51,8 @@ void stepCU()
     drawInstructionCounter(1);
     drawMemory();
     drawBigCell();
-    mt_gotoXY(1, 25);
+    drawAccumulator();
+    mt_gotoXY(1, 23);
 }
 
 void repaintCell()
@@ -103,7 +104,7 @@ int shell()
 
     repaintCell();
 
-    mt_gotoXY(1, 25);
+    mt_gotoXY(1, 23);
     int key;
     while (1)
     {
@@ -174,7 +175,7 @@ int shell()
         }
         case KEY_s:
         {
-            mt_gotoXY(1, 25);
+            mt_gotoXY(1, 23);
             rk_mytermregime(1, 0, 0, 1, 1);
             printf("file name:\n");
             char fileName[250];
@@ -187,7 +188,7 @@ int shell()
         }
         case KEY_l:
         {
-            mt_gotoXY(1, 25);
+            mt_gotoXY(1, 23);
             rk_mytermregime(1, 0, 0, 1, 1);
             printf("file name:\n");
             char fileName[250];
@@ -201,19 +202,19 @@ int shell()
         case KEY_enter:
         {
             int value;
-            sc_regGet(CLOCKIGNORE, &value);
-            sc_regSet(CLOCKIGNORE, 1);
-            mt_gotoXY(1, 25);
+            //sc_regGet(CLOCKIGNORE, &value);
+            //sc_regSet(CLOCKIGNORE, 1);
+            mt_gotoXY(1, 23);
             inputMemory(sc_counterGet());
             getchar();
-            if (!value)
-                sc_regSet(CLOCKIGNORE, 0);
+            //if (!value)
+            //sc_regSet(CLOCKIGNORE, 0);
             repaintCell();
             break;
         }
         case KEY_f5:
         {
-            mt_gotoXY(1, 25);
+            mt_gotoXY(1, 23);
             inputAccumulator();
             getchar();
             repaintCell();
@@ -221,7 +222,7 @@ int shell()
         }
         case KEY_f6:
         {
-            mt_gotoXY(1, 25);
+            mt_gotoXY(1, 23);
             inputCounter();
             getchar();
             repaintCell();
@@ -500,7 +501,7 @@ void drawInstructionCounter(int full)
     }
     getCounterBuffCom(buff, val);
     printf("%s", buff);
-    mt_gotoXY(1, 25);
+    mt_gotoXY(1, 23);
 }
 
 void get_zero(int value[2])
@@ -713,7 +714,7 @@ void drawBigCell()
             bc_printbigchar(valueChar, offsetCol, offsetRow + 1, Black, White);
         }
     }
-    mt_gotoXY(1, 25);
+    mt_gotoXY(1, 23);
 }
 
 void inputAccumulator()

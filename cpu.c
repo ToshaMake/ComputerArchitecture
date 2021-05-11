@@ -28,25 +28,34 @@ void inputMemory(int address)
         sc_memorySet(address, result + 32768);
     }
     rk_mytermregime(0, 0, 0, 0, 1);
+    getchar();
+    mt_gotoXY(1, 23);
+    for (int i = 23; i < 27; i++)
+    {
+        for (int j = 1; j < 30; j++)
+            putchar(' ');
+        putchar('\n');
+    }
+    mt_gotoXY(1, 23);
 }
 void outMemory(int address)
 {
-    mt_gotoXY(1, 25);
+    mt_gotoXY(1, 23);
     printf("Value:\n");
     int val;
     sc_memoryGet(address, &val);
-    printf("%04d", val);
+    printf("%04d", val - 32768);
 }
 void loadAccum(int address)
 {
     int val;
     sc_memoryGet(address, &val);
-    sc_accumSet(val);
+    sc_accumSet(val - 32768);
 }
 
 void storeAccum(int address)
 {
-    int val = sc_accumGet();
+    int val = sc_accumGet() + 32768;
     sign[address] = 1;
     sc_memorySet(address, val);
 }
@@ -61,28 +70,28 @@ int ALU(int command, int operand)
         if (operand >= SIZE)
             return -1;
         sc_memoryGet(operand, &val1);
-        value += val1;
+        value += (val1 - 32768);
         sc_accumSet(value);
         return 0;
     case 31:
         if (operand >= SIZE)
             return -1;
         sc_memoryGet(operand, &val1);
-        value -= val1;
+        value -= (val1 - 32768);
         sc_accumSet(value);
         return 0;
     case 32:
         if (operand >= SIZE)
             return -1;
         sc_memoryGet(operand, &val1);
-        value /= val1;
+        value /= (val1 - 32768);
         sc_accumSet(value);
         return 0;
     case 33:
         if (operand >= SIZE)
             return -1;
         sc_memoryGet(operand, &val1);
-        value *= val1;
+        value *= (val1 - 32768);
         sc_accumSet(value);
         return 0;
     case 66:
@@ -90,6 +99,8 @@ int ALU(int command, int operand)
             return -1;
         sc_memoryGet(operand, &val1);
         sc_memoryGet(value, &val2);
+        val1 -= 32768;
+        val2 -= 32768;
         val1 -= val2;
         sc_accumSet(val1);
         return 0;
