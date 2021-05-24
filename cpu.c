@@ -84,6 +84,8 @@ int ALU(int command, int operand)
         if (operand >= SIZE)
             return -1;
         sc_memoryGet(operand, &val1);
+        if (!(val1 - 32768))
+            sc_regSet(ZEROERROR, 1);
         value /= (val1 - 32768);
         sc_accumSet(value);
         return 0;
@@ -115,7 +117,7 @@ int CU()
     int value, command, operand;
     sc_memoryGet(sc_counterGet(), &value);
     sc_commandDecode(value, &command, &operand);
-    if ((!command) || (!operand))
+    if (!command)
     {
         sc_regSet(CLOCKIGNORE, 1);
         sc_regSet(COMMANDERROR, 1);
@@ -170,7 +172,7 @@ int CU()
             return 0;
         case 43:
             sc_regSet(CLOCKIGNORE, 1);
-            return 0;
+            return -2;
         default:
             return -1;
         }

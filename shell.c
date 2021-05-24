@@ -1,13 +1,5 @@
 #include "shell.h"
 
-// int sign[100];
-
-// static struct Cell
-// {
-//     int posRow;
-//     int posCol;
-// } currCell;
-
 struct sigaction act;
 
 static inline void setDefaultColor()
@@ -16,7 +8,6 @@ static inline void setDefaultColor()
     mt_setfgcolor(Black);
 }
 
-//void inputMemory(int address);
 void inputAccumulator();
 void inputCounter();
 void iterCounter();
@@ -30,8 +21,9 @@ void sigHandler(int signo)
         return;
     if (signo == SIGALRM)
     {
-        CU();
-        iterCounter();
+        int a = CU();
+        if (a != -2)
+            iterCounter();
         drawInstructionCounter(1);
         drawMemory();
         drawBigCell();
@@ -46,8 +38,9 @@ void sigHandler(int signo)
 }
 void stepCU()
 {
-    CU();
-    iterCounter();
+    int a = CU();
+    if (a != -2)
+        iterCounter();
     drawInstructionCounter(1);
     drawMemory();
     drawBigCell();
@@ -92,7 +85,7 @@ int shell()
 
     struct itimerval nval;
     nval.it_interval.tv_sec = 0;
-    nval.it_interval.tv_usec = 500;
+    nval.it_interval.tv_usec = 50000;
     nval.it_value.tv_sec = 0;
     nval.it_value.tv_usec = 2;
 
@@ -202,13 +195,9 @@ int shell()
         case KEY_enter:
         {
             int value;
-            //sc_regGet(CLOCKIGNORE, &value);
-            //sc_regSet(CLOCKIGNORE, 1);
             mt_gotoXY(1, 23);
             inputMemory(sc_counterGet());
             getchar();
-            //if (!value)
-            //sc_regSet(CLOCKIGNORE, 0);
             repaintCell();
             break;
         }
